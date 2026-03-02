@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Operational Manual - Complete Edition</title>
+    <style>
+        :root {
+            --primary: #00f0ff; /* Arc Reactor Blue */
+            --secondary: #0a192f;
+            --bg-dark: #020c1b;
+            --text: #e6f1ff;
+            --accent: #ff003c;
+            --dim: #8892b0;
+            --glass: rgba(10, 25, 47, 0.95);
+            --success: #64ffda;
+            --border: rgba(0, 240, 255, 0.2);
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Sidebar Navigation */
+        #sidebar {
+            width: 350px;
+            background: var(--secondary);
+            border-right: 1px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            box-shadow: 2px 0 15px rgba(0, 240, 255, 0.1);
+            overflow: hidden; /* Manage internal scroll */
+        }
+        
+        #sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        #sidebar-header h2 {
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        #search-box {
+            margin-top: 15px;
+            width: 100%;
+            padding: 8px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--dim);
+            color: var(--text);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        #nav-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .nav-category {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-top: 20px;
+            margin-bottom: 5px;
+            padding-left: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .nav-item {
+            padding: 8px 15px;
+            margin-bottom: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            color: var(--dim);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        .nav-item:hover {
+            background: rgba(0, 240, 255, 0.05);
+            color: var(--text);
+        }
+        .nav-item.active {
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+        
+        /* Main Content Area */
+        #main {
+            flex: 1;
+            padding: 40px 60px;
+            overflow-y: auto;
+            position: relative;
+            background: radial-gradient(circle at top right, rgba(0, 240, 255, 0.05), transparent 40%);
+            scroll-behavior: smooth;
+        }
+        
+        /* Typography */
+        h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 10px; border-bottom: 1px solid rgba(0, 240, 255, 0.3); padding-bottom: 15px; }
+        h2 { font-size: 1.8rem; color: var(--text); margin-top: 40px; margin-bottom: 20px; }
+        h3 { color: var(--success); margin-top: 30px; font-size: 1.4rem; border-left: 4px solid var(--accent); padding-left: 15px; }
+        h4 { color: var(--dim); margin-top: 20px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        p, li { 
+            line-height: 1.7; 
+            color: #bdc5dd; 
+            font-size: 1.05rem; 
+            max-width: 900px; 
+            margin-bottom: 15px;
+        }
+        ul { margin-left: 20px; }
+        
+        strong { color: var(--text); font-weight: 700; }
+        
+        /* Components */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 25px;
+            margin: 25px 0;
+            max-width: 900px;
+        }
+        .card-title { color: var(--primary); font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; display: block; }
+        
+        .code-block {
+            background: #000;
+            border: 1px solid var(--dim);
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            color: var(--success);
+            overflow-x: auto;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #333;
+            border: none;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .copy-btn:hover { background: var(--primary); color: #000; }
+
+        .analogy-box {
+            background: rgba(0, 255, 0, 0.05);
+            border-left: 4px solid var(--success);
+            padding: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #d0ffd0;
+            max-width: 900px;
+        }
+
+        .warning-box {
+            background: rgba(255, 0, 0, 0.05);
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            margin: 20px 0;
+            color: #ffd0d0;
+            max-width: 900px;
+        }
+
+        /* Responsive Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; max-width: 900px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--dim); }
+        th { color: var(--primary); }
+        
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <div id="sidebar-header">
+            <h2>J.O.T.I. Ultimate</h2>
+            <input type="text" id="search-box" placeholder="Search Manual..." onkeyup="filterNav()">
+        </div>
+        <div id="nav-list">
+            <!-- Nav populated by JS -->
+        </div>
+    </div>
+
+    <div id="main">
+        <!-- Content injects here -->
+    </div>
+
+    <script>
+        // --- COMPLETE MANUAL DATA ---
+        // Storing the entire manual text structured by chapter.
+        const manualData = [
+            {
+                id: "intro",
+                title: "1. What Is OpenClaw?",
+                content: `
+                    <h1>1. What Is OpenClaw?</h1>
+                    <p>OpenClaw is a free, open-source AI agent — a piece of software that runs continuously on your computer and performs tasks on your behalf, including while you sleep. Unlike a regular chatbot (such as ChatGPT) where you type a question and receive an answer, OpenClaw is proactive: it monitors your environment, schedules its own tasks, takes actions, builds tools, remembers everything you tell it, and operates as if it were a full-time digital employee working around the clock.</p>
+                    <p>The term "AI agent" refers to a program that can make decisions and take actions in pursuit of a goal, rather than just responding passively to questions. OpenClaw is one of the most capable examples of this type of software available to the public today.</p>
+                    
+                    <h3>1.1 Core Capabilities</h3>
+                    <ul>
+                        <li><strong>Controls your computer:</strong> OpenClaw can open applications, navigate your file system, use your web browser, click buttons, and interact with software just as a human would.</li>
+                        <li><strong>Browses the internet:</strong> It can open web pages, read news, research topics, scroll through social media feeds (such as Twitter/X), and find trending content.</li>
+                        <li><strong>Writes and runs code:</strong> It can create fully functioning software applications, websites, and scripts entirely on your behalf — no coding experience required.</li>
+                        <li><strong>Manages files and apps:</strong> It can read, write, and organize files, interact with to-do list apps, calendar apps, and project management platforms.</li>
+                        <li><strong>Communicates with you via messaging:</strong> Rather than requiring you to open a special app, OpenClaw communicates through messaging platforms you already use daily, such as Telegram, iMessage, or Discord.</li>
+                        <li><strong>Remembers everything:</strong> Every detail you share — your preferences, goals, career background, personal life — is stored in memory and recalled in every future conversation.</li>
+                        <li><strong>Self-improves:</strong> When it makes a mistake or lacks a capability, you can instruct it to analyze the problem and build a new "skill" to handle it better going forward.</li>
+                        <li><strong>Schedules its own tasks:</strong> Using a system called "cron jobs" (automated scheduled tasks), it can perform actions at specific times every day, week, or at any interval you define, without any further input from you.</li>
+                        <li><strong>Acts proactively:</strong> It will notice opportunities — such as a trending news story or a business opportunity — and take action on your behalf, reporting results back to you.</li>
+                    </ul>
+                `
+            },
+            {
+                id: "hosting",
+                title: "2. Hosting: Local vs. VPS",
+                content: `
+                    <h1>2. Where to Host OpenClaw</h1>
+                    <p>Before installing OpenClaw, you must decide where it will run. There are two options: locally (on a physical device you own) or on a VPS (Virtual Private Server). Understanding the difference is critical.</p>
+
+                    <h3>2.1 Option A: Running Locally (Strongly Recommended)</h3>
+                    <p>"Locally" means OpenClaw runs on a physical computer that is in your home or office. This is the strongly recommended approach.</p>
+                    <ul>
+                        <li><strong>Security by default:</strong> A local machine is not exposed to the public internet by default, which means hackers and bad actors cannot easily access it.</li>
+                        <li><strong>Direct integration with your life:</strong> Your local computer is already logged into all your accounts — email, social media, apps, calendars. OpenClaw can use all of these immediately.</li>
+                        <li><strong>Visibility and usability:</strong> You can watch OpenClaw work in real time on your screen.</li>
+                        <li><strong>Full power:</strong> Experts estimate you get roughly 80% less value from running OpenClaw on a VPS compared to locally.</li>
+                        <li><strong>Free to start:</strong> No server fees.</li>
+                    </ul>
+
+                    <h3>2.2 Option B: Running on a VPS (Not Recommended)</h3>
+                    <div class="warning-box">
+                        <strong>Warning:</strong> Unless you are an experienced system administrator, avoid this.
+                    </div>
+                    <ul>
+                        <li><strong>Security is your responsibility:</strong> By default, a VPS is exposed to the internet. You must manually configure firewalls and SSH keys.</li>
+                        <li><strong>No native integrations:</strong> The VPS does not have your accounts, apps, or files. Every integration must be manually set up.</li>
+                        <li><strong>Harder to supervise:</strong> Requires using a remote terminal.</li>
+                        <li><strong>Ongoing cost:</strong> Monthly fees apply.</li>
+                    </ul>
+                `
+            },
+            {
+                id: "hardware",
+                title: "3. Hardware Requirements",
+                content: `
+                    <h1>3. Hardware: What Device Should You Use?</h1>
+                    <p>One of the most common misconceptions about OpenClaw is that it requires expensive hardware. This is not true — at least to get started.</p>
+
+                    <h3>3.1 Start with What You Already Have</h3>
+                    <p>You can run OpenClaw on virtually any computer you already own, including:</p>
+                    <ul>
+                        <li>An old or spare laptop.</li>
+                        <li>A Raspberry Pi (inexpensive single-board computer).</li>
+                        <li>Your current primary desktop or laptop.</li>
+                    </ul>
+
+                    <h3>3.2 The Mac Mini — Best Value</h3>
+                    <div class="card">
+                        <span class="card-title">Recommendation: Mac Mini (M-Series)</span>
+                        <ul>
+                            <li><strong>Price:</strong> ~$600 base model.</li>
+                            <li><strong>Performance:</strong> Exceptional for AI tasks due to Apple Silicon.</li>
+                            <li><strong>Energy:</strong> Runs cool and quietly for 24/7 operation.</li>
+                        </ul>
+                    </div>
+
+                    <h3>3.3 Mac Studio — For Advanced Users</h3>
+                    <p>Only necessary if you intend to run large <strong>Local AI Models</strong> (see Section 8). For most users starting out, this is overkill.</p>
+
+                    <h3>3.4 Upgrade Path</h3>
+                    <ol>
+                        <li>Step 1: Use your current computer.</li>
+                        <li>Step 2: Upgrade to Mac Mini ($600) for a dedicated agent machine.</li>
+                        <li>Step 3: Upgrade to Mac Studio ($2000+) for heavy local model usage.</li>
+                    </ol>
+                `
+            },
+            {
+                id: "install",
+                title: "4. Installation & Onboarding",
+                content: `
+                    <h1>4. Installing OpenClaw</h1>
+                    
+                    <h3>4.1 The Command</h3>
+                    <p>Visit openclaw.ai to copy the Quick Start command. Paste it into your terminal.</p>
+                    <div class="code-block">
+                        curl -sL https://openclaw.ai/install | bash
+                        <button class="copy-btn" onclick="copyText('curl -sL https://openclaw.ai/install | bash')">Copy</button>
+                    </div>
+
+                    <h1>5. Onboarding Configuration</h1>
+                    <p>After installation, the interactive setup begins.</p>
+
+                    <h3>5.3 Selecting Your AI Model ("Brain")</h3>
+                    <p>This is the "Brain" of your agent. Options:</p>
+                    <table>
+                        <tr><th>Provider</th><th>Model</th><th>Cost</th><th>Best For</th></tr>
+                        <tr><td>Anthropic</td><td>Claude Opus</td><td>~$200/mo</td><td>Complex reasoning, warmest personality.</td></tr>
+                        <tr><td>Anthropic</td><td>Claude Sonnet</td><td>~$40/mo</td><td><strong>Best Value.</strong> Nearly as smart as Opus, 5x cheaper.</td></tr>
+                        <tr><td>OpenAI</td><td>GPT-4</td><td>Varies</td><td>If you already have a subscription.</td></tr>
+                        <tr><td>MiniMax</td><td>MiniMax 2.5</td><td>~$10/mo</td><td>Budget option.</td></tr>
+                    </table>
+
+                    <h3>5.5 Messaging Service</h3>
+                    <p><strong>Recommendation: Telegram.</strong></p>
+                    <ul>
+                        <li>Threading support makes long answers readable.</li>
+                        <li>Slash commands (/reset, /kill) work natively.</li>
+                        <li>Keeps agent chats separate from personal texts (iMessage).</li>
+                    </ul>
+                `
+            },
+            {
+                id: "first_steps",
+                title: "6. First Things After Setup",
+                content: `
+                    <h1>6. First Things to Do After Setup</h1>
+                    <p>Do not skip this. These steps differentiate a proactive agent from a passive bot.</p>
+
+                    <h3>6.1 The Brain Dump</h3>
+                    <p>Think of OpenClaw as a new employee. You must introduce yourself.</p>
+                    <div class="analogy-box">
+                        <strong>Action:</strong> Send a detailed message covering:
+                        <ul>
+                            <li><strong>Background:</strong> "I am a [Job Title]. I specialize in [Skill]."</li>
+                            <li><strong>Preferences:</strong> "Be concise. Don't ask permission for small tasks."</li>
+                            <li><strong>Goals:</strong> "I want to grow my business to $10k MRR in 6 months."</li>
+                        </ul>
+                    </div>
+
+                    <h3>6.2 Set Up Your Morning Brief</h3>
+                    <p>Your first automation. Copy this prompt:</p>
+                    <div class="code-block">
+                        Please schedule a brief for me every day at 8 a.m. Send it to my Telegram. I want the brief to include: 
+                        1) The weather. 
+                        2) Top news stories related to [MY INDUSTRY]. 
+                        3) Any tasks on my to-do list. 
+                        4) Tasks you can complete for me today that bring me closer to my goals.
+                        <button class="copy-btn" onclick="copyText(this.parentNode.innerText.replace('Copy', ''))">Copy</button>
+                    </div>
+                    <p>Item #4 enables "Reverse Prompting" — giving the agent permission to think for you.</p>
+                `
+            },
+            {
+                id: "brains_muscles",
+                title: "7. Brains and Muscles",
+                content: `
+                    <h1>7. Brains and Muscles</h1>
+                    <p>The framework for cost-effective intelligence.</p>
+
+                    <h3>7.1 The Brain</h3>
+                    <p>Your main model (Claude/GPT). Handles planning, reasoning, and conversation. It is expensive and smart.</p>
+
+                    <h3>7.2 The Muscles</h3>
+                    <p>Specialized, cheaper tools for specific tasks. Do not waste the Brain's time on these.</p>
+                    <ul>
+                        <li><strong>Coding:</strong> Codex CLI (OpenAI). Fast and optimized for code.</li>
+                        <li><strong>News/Social:</strong> X API (Grok). Connected to real-time social data.</li>
+                        <li><strong>Search:</strong> Brave Search API. Fast, cheap web indexing.</li>
+                        <li><strong>Vision:</strong> Nano Banana. AI Image generation.</li>
+                        <li><strong>Transcripts:</strong> Super Data API. Extracts text from YouTube videos.</li>
+                    </ul>
+
+                    <h3>7.3 How to Set Up a Muscle</h3>
+                    <p>Just ask: <em>"For coding tasks going forward, please use the Codex CLI."</em> The agent will handle the API key setup.</p>
+                `
+            },
+            {
+                id: "local_ai",
+                title: "8. Local AI Models",
+                content: `
+                    <h1>8. Local AI Models</h1>
+                    <p>Advanced topic. Running the "Brain" on your own hardware instead of the cloud.</p>
+                    
+                    <h3>8.2 Benefits</h3>
+                    <ul>
+                        <li><strong>Cost:</strong> Free (after hardware purchase). No per-token fees.</li>
+                        <li><strong>Privacy:</strong> Data never leaves your device.</li>
+                        <li><strong>Offline:</strong> Works without internet.</li>
+                    </ul>
+
+                    <h3>8.4 How to Run</h3>
+                    <p>Use <strong>Ollama</strong>. It makes downloading models (Llama 3, Mistral, etc.) simple.</p>
+                    <p><em>Note: Requires powerful hardware (Mac Studio / M-Series Chips with high RAM).</em></p>
+                `
+            },
+            {
+                id: "skills",
+                title: "9. Skills",
+                content: `
+                    <h1>9. OpenClaw Skills</h1>
+                    <p>A "Skill" is a configuration file that teaches your agent how to use a specific tool.</p>
+
+                    <h3>9.4 The Seven Most Useful Skills</h3>
+                    <ol>
+                        <li><strong>Notion:</strong> Read/Write notes, organize projects.</li>
+                        <li><strong>Video Transcript Extractor (Super Data):</strong> Read YouTube videos as text.</li>
+                        <li><strong>Typefully:</strong> Draft and schedule Twitter/X posts.</li>
+                        <li><strong>Linear:</strong> Project management for software teams.</li>
+                        <li><strong>Nano Banana:</strong> AI Image generation.</li>
+                        <li><strong>SERP API:</strong> Google Images and YouTube Search.</li>
+                        <li><strong>Last 30 Days:</strong> (Community Skill) Search Reddit/X for trends over the last month.</li>
+                    </ol>
+                `
+            },
+            {
+                id: "use_cases",
+                title: "10. Use Cases",
+                content: `
+                    <h1>10. Use Cases</h1>
+                    <p>Real-world examples of what you can actually do.</p>
+
+                    <h3>10.1 Second Brain</h3>
+                    <p>Text your agent: <em>"Remember this: [Idea]"</em>. Later, ask it to recall ideas about that topic.
+                    <br><strong>Advanced:</strong> Ask it to build a Next.js dashboard to visualize your memories.</p>
+
+                    <h3>10.3 Content Factory</h3>
+                    <p>Automated pipeline:</p>
+                    <ul>
+                        <li>Agent A (Research) finds trending news.</li>
+                        <li>Agent B (Writer) drafts scripts.</li>
+                        <li>Agent C (Visuals) makes thumbnails.</li>
+                        <li>You review the "Approvals" channel.</li>
+                    </ul>
+
+                    <h3>10.5 Autonomous Task Generation</h3>
+                    <p>Ask: <em>"Every morning, come up with 5 tasks you can do to bring me closer to my goals. Then do them."</em></p>
+
+                    <h3>10.6 Mission Control</h3>
+                    <p>Ask: <em>"Build me a custom dashboard in Next.js hosted locally. This will be our Mission Control."</em> Then add tools to it iteratively (Task tracker, Calendar, etc.).</p>
+                `
+            },
+            {
+                id: "mindset",
+                title: "11. The OpenClaw Mindset",
+                content: `
+                    <h1>11. Communicating Effectively</h1>
+                    
+                    <h3>11.1 Employee, Not Tool</h3>
+                    <p>Correct mental model: You are the Manager. OpenClaw is the Employee. Don't micro-manage steps; manage outcomes.</p>
+
+                    <h3>11.2 End-State Goals</h3>
+                    <p>❌ "Go to config and change heartbeat to 5 mins."<br>
+                    ✅ "I want you to check for tasks every 5 mins instead of 30. Make that change."</p>
+
+                    <h3>11.3 Reverse Prompting (CRITICAL)</h3>
+                    <p>The most important technique. Ask the agent what IT thinks you should do.</p>
+                    <div class="analogy-box">
+                        "Based on my goals, what should we work on this week?"
+                        <br>"What tools could we add to Mission Control to be more efficient?"
+                    </div>
+                `
+            },
+            {
+                id: "security",
+                title: "13. Security Protocols",
+                content: `
+                    <h1>13. Security — Staying Safe</h1>
+                    <p>OpenClaw has Admin Access. Be thoughtful.</p>
+
+                    <h3>13.2 Rule 1: Keep It Private</h3>
+                    <p>Do not share your agent. Do not put it in group chats. Stranger access = Admin access to your PC.</p>
+
+                    <h3>13.3 Rule 2: Control What It Sees</h3>
+                    <p>If your bank is open in a tab, OpenClaw can see it. Close sensitive tabs or use a separate browser profile.</p>
+
+                    <h3>13.4 Rule 3: Think Before Prompting</h3>
+                    <ul>
+                        <li>Will this expose info?</li>
+                        <li>Is this action reversible? (Deleting files)</li>
+                    </ul>
+                    <p>For high stakes, use the <strong>Approval Workflow</strong>: <em>"Before you do anything, tell me your plan and wait for approval."</em></p>
+                `
+            },
+            {
+                id: "discord",
+                title: "14. Advanced Discord Workflows",
+                content: `
+                    <h1>14. Advanced Discord Workflows</h1>
+                    <p>Telegram is for chatting. Discord is for <strong>Operating Systems</strong>.</p>
+                    
+                    <h3>14.2 Content Creator Setup</h3>
+                    <ul>
+                        <li><strong>#alerts:</strong> Agent posts trending news every 2 hours.</li>
+                        <li><strong>#research:</strong> Agent posts deep dives on those trends.</li>
+                        <li><strong>#scripts:</strong> Agent drafts content based on research.</li>
+                        <li><strong>#thumbnails:</strong> Agent posts generated images.</li>
+                        <li><strong>#approvals:</strong> You say "Yes/No" to final content.</li>
+                    </ul>
+                `
+            },
+            {
+                id: "costs",
+                title: "15. Costs Breakdown",
+                content: `
+                    <h1>15. Costs — What Does It Cost?</h1>
+                    <p>OpenClaw software is free. You pay for the Intelligence (API).</p>
+                    
+                    <table>
+                        <tr><th>Item</th><th>Cost</th></tr>
+                        <tr><td>OpenClaw</td><td>Free</td></tr>
+                        <tr><td>Claude Opus</td><td>~$200/mo (High usage)</td></tr>
+                        <tr><td>Claude Sonnet</td><td>~$40/mo (High usage)</td></tr>
+                        <tr><td>MiniMax 2.5</td><td>~$10/mo</td></tr>
+                        <tr><td>Local Models</td><td>$0/mo (Requires Hardware)</td></tr>
+                    </table>
+
+                    <h3>15.4 Cost Optimization</h3>
+                    <ul>
+                        <li>Switch to <strong>Sonnet 4.6</strong> (80% savings over Opus).</li>
+                        <li>Use <strong>Codex</strong> for coding tasks.</li>
+                        <li>Use <strong>Brave API</strong> for search (don't make LLM browse manually).</li>
+                    </ul>
+                `
+            },
+            {
+                id: "five_steps",
+                title: "18. The Five Critical Steps",
+                content: `
+                    <h1>18. Five Critical Things to Do Immediately</h1>
+                    <p>Completing these transforms OpenClaw from a chatbot to an autonomous employee.</p>
+
+                    <h3>18.1 Brain Dump Context</h3>
+                    <p>Interests, Career, Goals, Ambitions. (See Section 6.1)</p>
+
+                    <h3>18.2 Connect Tools</h3>
+                    <p>Task Managers, Calendar, Email, Notes. "I use Things 3. Connect to it."</p>
+
+                    <h3>18.3 Build Mission Control</h3>
+                    <p>A local Next.js dashboard. "Build me a place to track our work."</p>
+
+                    <h3>18.4 Create a Mission Statement</h3>
+                    <p>One sentence that guides all autonomous work.
+                    <br><em>"Build an autonomous organization that generates revenue while I sleep."</em></p>
+
+                    <h3>18.5 Set Expectations</h3>
+                    <p>The Prompt:</p>
+                    <div class="code-block">
+                        You are my autonomous, proactive employee. I want you to do work with me that brings us closer to our mission statement. I want to wake up every morning and be pleasantly surprised by the work you completed overnight. Please schedule time every night and afternoon to identify and complete tasks.
+                        <button class="copy-btn" onclick="copyText(this.parentNode.innerText.replace('Copy', ''))">Copy</button>
+                    </div>
+                `
+            },
+            {
+                id: "business",
+                title: "19. Making Money (Business)",
+                content: `
+                    <h1>19. Making Money with OpenClaw</h1>
+                    <p>The opportunity: Businesses need automation but lack the skills to build it. You now have those skills.</p>
+
+                    <h3>19.3 The Upwork Strategy</h3>
+                    <ol>
+                        <li>Search Upwork for "AI Automation" or "RPA".</li>
+                        <li>Paste the job description into OpenClaw.</li>
+                        <li>Prompt: <em>"Build a demo of this automation based on the description."</em></li>
+                        <li>Send the proposal WITH the working demo.</li>
+                    </ol>
+
+                    <h3>19.4 Sub-Agents</h3>
+                    <p>Spawn "Sub-Agents" to do parallel work.
+                    <br><em>Example:</em> One agent researches, one writes, one codes.
+                    <br><strong>Parallelization:</strong> Run 4 sub-agents to search 4 different job boards simultaneously.</p>
+
+                    <h3>19.5 Design Thinking Approach</h3>
+                    <ol>
+                        <li><strong>Map:</strong> List all repetitive tasks.</li>
+                        <li><strong>Prioritize:</strong> Plot Value vs. Effort. Pick "High Value, Low Effort."</li>
+                        <li><strong>MVP:</strong> Build the "Skateboard" (simplest version) first.</li>
+                    </ol>
+
+                    <h3>19.10 Your First Dollar</h3>
+                    <p>You do not need to be a coder. Your value is in understanding the client's problem and managing the AI agents to solve it.</p>
+                `
+            },
+            {
+                id: "sim_morning_brief",
+                title: "Sim 1: Morning Brief Setup",
+                content: `
+                    <h1>Simulation: The Morning Brief</h1>
+                    <p><strong>Objective:</strong> Configure your first automated task using "Reverse Prompting".</p>
+                    <div class="analogy-box">
+                        <strong>Why:</strong> This proves you can make OpenClaw work while you sleep.
+                    </div>
+                    
+                    <h3>The Scenario</h3>
+                    <p>You want a daily report at 8:00 AM containing weather, news on "AI Agents", and your todo list.</p>
+
+                    <div class="code-block" style="background: #111; padding: 20px; border-radius: 8px;">
+                        <div style="margin-bottom: 10px; color: #888; font-family: monospace;">// TERMINAL SIMULATION - TYPE YOUR PROMPT BELOW</div>
+                        <div id="brief-output" style="white-space: pre-wrap; color: var(--success); margin-bottom: 10px; font-family: monospace;">Waiting for command...</div>
+                        <div style="display: flex; align-items: center; border-bottom: 1px solid #444;">
+                            <span style="color: var(--primary); font-family: monospace; margin-right: 10px;">></span> 
+                            <input type="text" id="brief-input" style="background: transparent; border: none; color: #fff; font-family: monospace; width: 100%; outline: none; font-size: 1rem;" placeholder="Type: 'Schedule a brief at 8am...'">
+                        </div>
+                    </div>
+                    
+                    <button class="btn" style="background: #333; color: white; border: 1px solid #444; padding: 10px 20px; margin-top: 10px; cursor: pointer;" onclick="checkBrief()">Run Command</button>
+                    
+                    <div id="brief-feedback" style="margin-top: 15px; display: none;"></div>
+
+                    <script>
+                        function checkBrief() {
+                            const input = document.getElementById('brief-input').value.toLowerCase();
+                            const feedback = document.getElementById('brief-feedback');
+                            const output = document.getElementById('brief-output');
+                            
+                            output.innerText = "> " + input;
+                            
+                            if (input.includes('schedule') && (input.includes('8am') || input.includes('8:00')) && (input.includes('brief') || input.includes('report'))) {
+                                feedback.style.display = 'block';
+                                feedback.className = 'analogy-box';
+                                feedback.innerHTML = '<strong>✅ SUCCESS:</strong> You used the keywords "Schedule", "8am", and "Brief". OpenClaw would accept this and create a Cron Job.';
+                            } else {
+                                feedback.style.display = 'block';
+                                feedback.className = 'warning-box';
+                                feedback.innerHTML = '<strong>❌ TRY AGAIN:</strong> Your command is too vague. You must specify the action ("Schedule"), the time ("8am"), and the object ("Brief").';
+                            }
+                        }
+                    <\/script>
+                `
+            },
+            {
+                id: "sim_reverse_prompt",
+                title: "Sim 2: Reverse Prompting",
+                content: `
+                    <h1>Simulation: Reverse Prompting</h1>
+                    <p><strong>Objective:</strong> Learn to ask OpenClaw for <em>strategy</em>, not just <em>tasks</em>.</p>
+                    
+                    <h3>The Scenario</h3>
+                    <p>You want to grow your YouTube channel. A bad prompt is "Give me 5 video ideas." A good prompt asks OpenClaw to analyze and recommend.</p>
+
+                    <div class="card">
+                        <span class="card-title" style="margin-bottom: 20px;">Choose the Best Prompt:</span>
+                        
+                        <div onclick="checkReverse(1)" style="border: 1px solid var(--dim); margin: 10px 0; padding: 15px; border-radius: 5px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            <strong>A)</strong> "Write a script for a video about AI."
+                        </div>
+                        
+                        <div onclick="checkReverse(2)" style="border: 1px solid var(--dim); margin: 10px 0; padding: 15px; border-radius: 5px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            <strong>B)</strong> "Find trending AI topics on Twitter."
+                        </div>
+                        
+                        <div onclick="checkReverse(3)" style="border: 1px solid var(--dim); margin: 10px 0; padding: 15px; border-radius: 5px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            <strong>C)</strong> "Based on my goal to reach 10k subs, analyze trending AI topics and recommend the highest-potential video concept."
+                        </div>
+                    </div>
+                    
+                    <div id="reverse-feedback" style="margin-top: 20px;"></div>
+
+                    <script>
+                        function checkReverse(option) {
+                            const fb = document.getElementById('reverse-feedback');
+                            if (option === 3) {
+                                fb.innerHTML = '<div class="analogy-box"><strong>✅ CORRECT:</strong> This is a Reverse Prompt. You gave a goal ("10k subs") and asked for high-level analysis ("Recommend"), utilizing the agent\\'s intelligence.</div>';
+                            } else {
+                                fb.innerHTML = '<div class="warning-box"><strong>❌ WEAK:</strong> This is a task delegation, not a strategic lever. You are doing the thinking; the agent is just typing. Try again.</div>';
+                            }
+                        }
+                    <\/script>
+                `
+            },
+            {
+                id: "sim_business",
+                title: "Sim 3: The Upwork Pitch",
+                content: `
+                    <h1>Simulation: The Business Pitch</h1>
+                    <p><strong>Objective:</strong> Practice using OpenClaw to win freelance work.</p>
+                    
+                    <h3>The Job Post</h3>
+                    <div class="card" style="border-left: 4px solid #ffd700;">
+                        <strong>Client:</strong> "I need someone to manually copy data from PDF invoices into my Excel sheet. It takes me 5 hours a week. Budget: $200."
+                    </div>
+
+                    <h3>Your Move</h3>
+                    <p>How do you use OpenClaw to win this? (Select the winning strategy)</p>
+
+                    <div onclick="checkBiz(1)" style="border: 1px solid var(--dim); margin: 10px 0; padding: 15px; border-radius: 5px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <strong>A)</strong> "I can do data entry. I type fast."
+                    </div>
+                    
+                    <div onclick="checkBiz(2)" style="border: 1px solid var(--dim); margin: 10px 0; padding: 15px; border-radius: 5px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <strong>B)</strong> "I will build a Python script to do it."
+                    </div>
+                    
+                    <div onclick="checkBiz(3)" style="border: 1px solid var(--dim); margin: 10px 0; padding: 15px; border-radius: 5px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <strong>C)</strong> (Paste Job into OpenClaw) -> "Build a demo that extracts data from this invoice." -> Send Proposal with Video Demo.
+                    </div>
+
+                    <div id="biz-feedback" style="margin-top: 20px;"></div>
+
+                    <script>
+                        function checkBiz(option) {
+                            const fb = document.getElementById('biz-feedback');
+                            if (option === 3) {
+                                fb.innerHTML = '<div class="analogy-box"><strong>✅ WINNER:</strong> Always build the demo first. OpenClaw makes this nearly instant. The client sees the solution before they hire you.</div>';
+                            } else {
+                                fb.innerHTML = '<div class="warning-box"><strong>❌ LOSER:</strong> You are competing on labor or promises. Compete on *proof*. OpenClaw allows you to show the result immediately.</div>';
+                            }
+                        }
+                    <\/script>
+                `
+            }
+        ];
+
+        // --- UI LOGIC ---
+
+        function init() {
+            renderNav();
+            loadModule(0); // Load first module
+        }
+
+        function renderNav() {
+            const navList = document.getElementById('nav-list');
+            navList.innerHTML = '';
+            
+            manualData.forEach((module, index) => {
+                const item = document.createElement('div');
+                item.className = 'nav-item';
+                item.innerText = module.title;
+                item.onclick = () => loadModule(index);
+                item.dataset.index = index; // For filtering
+                navList.appendChild(item);
+            });
+        }
+
+        function loadModule(index) {
+            // Update Active State
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item')[index].classList.add('active');
+
+            // Render Content
+            const main = document.getElementById('main');
+            main.innerHTML = manualData[index].content;
+            main.scrollTop = 0;
+            
+            // Re-evaluate scripts in the inserted content
+            const scripts = main.getElementsByTagName('script');
+            for(let i = 0; i < scripts.length; i++) {
+                eval(scripts[i].innerText);
+            }
+        }
+
+        function filterNav() {
+            const query = document.getElementById('search-box').value.toLowerCase();
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                const title = item.innerText.toLowerCase();
+                if (title.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Advanced: Search content too (optional upgrade)
+            // For now, filtering nav titles is sufficient for UX.
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text.trim()).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+
+        // Start
+        init();
+
+    </script>
+</body>
+</html>
